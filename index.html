@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>New Year Countdown</title>
+
+<script
+  src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js"
+  type="module">
+</script>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    color: white;
+    background: url("new year.jpg") center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay {
+    background: rgba(0,0,0,0.45);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    letter-spacing: 3px;
+    margin-bottom: 40px;
+    transition: opacity 1s ease;
+}
+#image {
+    display: none;
+    width: 300px;
+    border-radius: 15px;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    align-items: center;
+}
+
+.timer {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.box {
+    background: rgba(0,0,0,0.55);
+    width: 120px;
+    height: 140px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.number {
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.label {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.happy {
+    display: none;
+    font-size: 42px;
+    margin-top: 20px;
+    animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px gold; }
+    to { text-shadow: 0 0 30px red; }
+}
+
+.lottie-firework {
+    position: fixed;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+    z-index: 999;
+}
+</style>
+</head>
+
+<body>
+
+<div class="overlay">
+<div class="container">
+
+<h1 id="title">ONLY LEFT</h1>
+
+<div class="timer" id="timer">
+    <div class="box"><div class="number" id="days">00</div><div class="label">DAYS</div></div>
+    <div class="box"><div class="number" id="hours">00</div><div class="label">HOURS</div></div>
+    <div class="box"><div class="number" id="minutes">00</div><div class="label">MINUTES</div></div>
+    <div class="box"><div class="number" id="seconds">00</div><div class="label">SECONDS</div></div>
+</div>
+
+<div class="happy" id="happy">🎆 HAPPY NEW YEAR 2026 🎆</div>
+<img src="bleh.jpg" alt="image" id="image">
+
+<audio id="fireSound" src="kumar.mp3" preload="auto"></audio>
+
+</div>
+</div>
+
+
+<script>
+/* ========= AUDIO UNLOCK ========= */
+const fireSound = document.getElementById("fireSound");
+fireSound.volume = 0.5;
+
+let audioUnlocked = false;
+let soundPlayed = false;
+
+// Invisible unlock on ANY interaction
+function unlockAudio() {
+    if (!audioUnlocked) {
+        fireSound.play().then(() => {
+            fireSound.pause();
+            fireSound.currentTime = 0;
+            audioUnlocked = true;
+        }).catch(()=>{});
+    }
+}
+
+document.addEventListener("click", unlockAudio);
+document.addEventListener("keydown", unlockAudio);
+document.addEventListener("touchstart", unlockAudio);
+
+function playSoundOnce() {
+    if (audioUnlocked && !soundPlayed) {
+        soundPlayed = true;
+        fireSound.play();
+    }
+}
+
+/* ========= FIREWORK ========= */
+function firework() {
+    const f = document.createElement("dotlottie-wc");
+    f.setAttribute("src","https://lottie.host/15fc062c-5556-4c76-8e1c-5e1a35a92060/fimUu7B5V2.lottie");
+    f.setAttribute("autoplay","");
+    f.setAttribute("loop","");
+    f.className = "lottie-firework";
+    f.style.left = Math.random() * (innerWidth - 220) + "px";
+    f.style.top = Math.random() * (innerHeight - 220) + "px";
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(),5000);
+}
+
+/* ========= COUNTDOWN ========= */
+const target = new Date("January 1, 2026 00:00:00").getTime();
+
+const timer = setInterval(() => {
+    const diff = target - Date.now();
+
+    if (diff <= 0) {
+        clearInterval(timer);
+        document.getElementById("timer").style.display = "none";
+        document.getElementById("title").style.opacity = "0";
+        document.getElementById("image").style.display = "block";
+        document.getElementById("happy").style.display = "block";
+
+        playSoundOnce(); // 🔊 auto plays after unlock
+        setInterval(firework, 700);
+        return;
+    }
+
+    document.getElementById("days").textContent = String(Math.floor(diff / 86400000)).padStart(2,"0");
+    document.getElementById("hours").textContent = String(Math.floor(diff / 3600000) % 24).padStart(2,"0");
+    document.getElementById("minutes").textContent = String(Math.floor(diff / 60000) % 60).padStart(2,"0");
+    document.getElementById("seconds").textContent = String(Math.floor(diff / 1000) % 60).padStart(2,"0");
+}, 1000);
+</script>
+
+</body>
+</html>
